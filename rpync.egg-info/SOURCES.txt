@@ -3,6 +3,7 @@ setup.py
 rpync/__init__.py
 rpync/backup.py
 rpync/command.py
+rpync/job.py
 rpync/main.py
 rpync.egg-info/PKG-INFO
 rpync.egg-info/SOURCES.txt

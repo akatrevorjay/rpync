@@ -1,5 +1,6 @@
 import logging
 import sys
+import os.path
 
 from ConfigParser import SafeConfigParser as ConfigParser
 from optparse     import OptionParser
@@ -7,9 +8,9 @@ from optparse     import OptionParser
 from rpync.backup import Backup
 from rpync.job    import Job
 
-LOG_FILE = '/var/log/rpync.log'
-CFG_FILE = '/etc/rpync/main.conf'
-JOB_DIR  = '/etc/rpync/jobs.d'
+SYS_CONFIG_FILE = '/etc/rpync/main.conf'
+USR_CONFIG_FILE = os.path.expanduser('~/.rpync.conf')
+DEF_CONFIG_FILE = os.path.join(os.path.dirname(__file__), 'default.conf')
 
 def main():
 
@@ -22,7 +23,7 @@ def main():
         opt.add_option('-d','--debug',action='store_true',dest='debug',default=False,
                        help='emit debug messages to file log and to the console if verbose is set.')
         opt.add_option('-c','--config',action='store',type='string',dest='config',
-                       default=CFG_FILE,
+                       default=SYS_CONFIG_FILE,
                        help='Configuration file.')
         opt.add_option('-b','--backup',action='store_true',dest='backup',default=False,
                        help='run the backup jobs. Defaults to all, if no jobs are given.')
@@ -31,34 +32,11 @@ def main():
         return opt
 
     def init_config(config=None):
-        cfg = ConfigParser()
-        # Global section
-        cfg.add_section('global')
-        cfg.set('global', 'logfile', LOG_FILE)
-        cfg.set('global', 'jobdir',  JOB_DIR)
-        # Destination section
-        cfg.add_section('destination')
-        cfg.set('destination', 'ssh-port', '22')
-        cfg.set('destination', 'host',     'localhost')
-        # Local commands
-        cfg.add_section('commands:local')
-        cfg.set('commands:local','cat',      '/bin/cat')
-        cfg.set('commands:local','dpkg',     '/usr/bin/dpkg')
-        cfg.set('commands:local','hostname', '/bin/hostname')
-        cfg.set('commands:local','mount',    '/bin/mount')
-        cfg.set('commands:local','rm',       '/bin/rm')
-        cfg.set('commands:local','rsync',    '/usr/bin/rsync')
-        cfg.set('commands:local','ssh',      '/usr/bin/ssh')
-        cfg.set('commands:local','umount',   '/bin/umount')
-        # Remote commands. May be overwritten by job
-        cfg.add_section('commands:remote')
-        cfg.set('commands:remote','cat',      'cat')
-        cfg.set('commands:remote','dpkg',     'dpkg')
-        cfg.set('commands:remote','hostname', 'hostname')
-        cfg.set('commands:remote','rsync',    'rsync')
-        cfg.set('commands:remote','sudo',     'sudo')
+        files = [DEF_CONFIG_FILE, SYS_CONFIG_FILE, USR_CONFIG_FILE]
+        cfg   = ConfigParser()
         if config is not None:
-            cfg.read(config)
+            files.append(config)
+        print cfg.read(files)
         return cfg
 
     def init_logger(config, verbose=False, debug=False):
