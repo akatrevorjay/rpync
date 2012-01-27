@@ -1,0 +1,11 @@
+Metadata-Version: 1.0
+Name: rpync
+Version: 0.1dev
+Summary: Backup utility using rsync for the heavy work
+Home-page: UNKNOWN
+Author: Marc Göldner
+Author-email: UNKNOWN
+License: GPL
+Description: UNKNOWN
+Keywords: backup rsync
+Platform: UNKNOWN

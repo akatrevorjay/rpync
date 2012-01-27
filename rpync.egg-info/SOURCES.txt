@@ -1,0 +1,12 @@
+setup.cfg
+setup.py
+rpync/__init__.py
+rpync/backup.py
+rpync/command.py
+rpync/main.py
+rpync.egg-info/PKG-INFO
+rpync.egg-info/SOURCES.txt
+rpync.egg-info/dependency_links.txt
+rpync.egg-info/entry_points.txt
+rpync.egg-info/not-zip-safe
+rpync.egg-info/top_level.txt

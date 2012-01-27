@@ -1,0 +1,4 @@
+*.py[co]
+*.conf
+*.log
+jobs.d/
