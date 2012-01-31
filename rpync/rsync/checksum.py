@@ -35,27 +35,37 @@ class BlockChecksum(object):
             b += a
         return a, b, (a%M) + M * (b%M)
 
-    def weak_checksum(self, offset):
+    def weak_checksum(self, offset=None):
         if self._file is None:
             raise IOError, "Stream is closed"
-        if offset >= self._filesize:
+        if offset is None:
+            if self._block is None:
+                raise IOError
+            return self._checksum(offset, self._block)[2]
+        elif offset < self._filesize:
+            index = self._file.tell()
+            self._file.seek(offset)
+            block = self._file.read(self._blocksize)
+            self._file.seek(index)
+            return self._checksum(offset, block)[2]
+        else:
             raise EOFError
-        index = self._file.tell()
-        self._file.seek(offset)
-        block = self._file.read(self._blocksize)
-        self._file.seek(index)
-        return self._checksum(offset, block)[2]
 
-    def strong_checksum(self, offset):
+    def strong_checksum(self, offset=None):
         if self._file is None:
             raise IOError, "Stream is closed"
-        if offset >= self._filesize:
+        algo = hashlib.new('sha256')
+        if offset is None:
+            if self._block is None:
+                raise IOError
+            algo.update(self._block)
+        elif offset < self._filesize:
+            index = self._file.tell()
+            self._file.seek(offset)
+            algo.update(self._file.read(self._blocksize))
+            self._file.seek(index)
+        else:
             raise EOFError
-        algo  = hashlib.new('sha256')
-        index = self._file.tell()
-        self._file.seek(offset)
-        algo.update(self._file.read(self._blocksize))
-        self._file.seek(index)
         return algo.hexdigest()
 
     def read(self):
@@ -127,6 +137,37 @@ class RollingChecksum(BlockChecksum):
         self._a = self._b = None
         self._k = self._l = None
 
+    def weak_checksum(self, offset=None):
+        if self._file is None:
+            raise IOError, "Stream is closed"
+        if offset is None:
+            if self._block is None:
+                raise IOError
+            return self._a + M * self._b
+        else:
+            return BlockChecksum.weak_checksum(self, offset)
+
+    def strong_checksum(self, offset=None):
+        if self._file is None:
+            raise IOError, "Stream is closed"
+        if offset is None:
+            if self._block is None:
+                raise IOError
+            k    = self._k - self._blockoffset
+            l    = self._l - self._blockoffset
+            algo = hashlib.new('sha256')
+            if k == 0:
+                algo.update(self._block[0])
+            elif k == self._blocksize:
+                print self._k,k,l
+                algo.update(self._block[1])
+            else:
+                algo.update(self._block[0][k:])
+                algo.update(self._block[1][:l+1])
+            return algo.hexdigest()
+        else:
+            return BlockChecksum.strong_checksum(self, offset)
+
     def read(self):
         if self._file is None:
             raise IOError, "Stream is closed"
@@ -138,7 +179,7 @@ class RollingChecksum(BlockChecksum):
             self._k                = 0L
             self._l                = min(self._blocksize-1, self._filesize-1)
             self._a, self._b, csum = self._checksum(0L, self._block[0])
-            return (0L, min(len(self._block), self._blocksize), csum)
+            return (0L, long(min(len(self._block[0]), self._blocksize)), csum)
         else:
             return self._rolling_checksum()
 
