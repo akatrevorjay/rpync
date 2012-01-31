@@ -154,12 +154,11 @@ class RollingChecksum(BlockChecksum):
             if self._block is None:
                 raise IOError
             k    = self._k - self._blockoffset
-            l    = self._l - self._blockoffset
+            l    = self._l - self._blockoffset - self._blocksize
             algo = hashlib.new('sha256')
             if k == 0:
                 algo.update(self._block[0])
             elif k == self._blocksize:
-                print self._k,k,l
                 algo.update(self._block[1])
             else:
                 algo.update(self._block[0][k:])
