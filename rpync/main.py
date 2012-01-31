@@ -36,7 +36,7 @@ def main():
         cfg   = ConfigParser()
         if config is not None:
             files.append(config)
-        print cfg.read(files)
+        cfg.read(files)
         return cfg
 
     def init_logger(config, verbose=False, debug=False):
