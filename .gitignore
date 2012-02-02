@@ -1,6 +1,4 @@
 *.py[co]
 *.log
-output.txt
 scratch.py
-rpync.conf
-jobs.d/
+

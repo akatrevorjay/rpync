@@ -29,5 +29,11 @@ setup(name='rpync',
       install_requires=[
           # -*- Extra requirements: -*-
       ],
-      entry_points={'console_scripts': ['rpync = rpync.main:main'],},
+      entry_points={
+        'console_scripts': [
+            'rpync = rpync.client.main:main',
+            'rpync-agent = rpync.agent.main:main',
+            'rpync-server = rpync.server.main:main',
+        ],
+      },
 )

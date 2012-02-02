@@ -1,3 +1,5 @@
 [console_scripts]
-rpync = rpync.main:main
+rpync-agent = rpync.agent.main:main
+rpync-server = rpync.server.main:main
+rpync = rpync.client.main:main
 
