@@ -13,7 +13,7 @@ class Server(LineReceiver):
 
     def connectionMade(self):
         self.log.info("Connection established ...")
-        self.transport.write("rpync-server ({0})\r\n".format(rpync.version))
+        self.transport.write("rpync-server ({0})\r\n".format(rpync.__version__))
 
 
     def connectionLost(self, reason):
@@ -34,4 +34,4 @@ class ServerFactory(Factory):
         return Server(self)
 
     def startFactory(self):
-        self.log.info("Version {0}".format(rpync.version))
+        self.log.info("Version {0}".format(rpync.__version__))

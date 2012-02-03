@@ -1,2 +1,2 @@
 #
-version = "0.1alpha0"
+__version__ = "0.1alpha0"
