@@ -21,3 +21,4 @@ rpync/common/logger.py
 rpync/server/__init__.py
 rpync/server/job.py
 rpync/server/main.py
+rpync/server/protocol.py
