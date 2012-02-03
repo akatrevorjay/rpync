@@ -27,7 +27,7 @@ setup(name='rpync',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-          # -*- Extra requirements: -*-
+          "twisted >= 11.1.0"
       ],
       entry_points={
         'console_scripts': [

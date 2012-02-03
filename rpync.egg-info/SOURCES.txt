@@ -6,6 +6,7 @@ rpync.egg-info/SOURCES.txt
 rpync.egg-info/dependency_links.txt
 rpync.egg-info/entry_points.txt
 rpync.egg-info/not-zip-safe
+rpync.egg-info/requires.txt
 rpync.egg-info/top_level.txt
 rpync/agent/__init__.py
 rpync/agent/main.py
