@@ -1,3 +1,5 @@
+import rpync
+
 from rpync.common.logger import getLogger
 
 from twisted.internet.protocol import Factory
@@ -10,7 +12,9 @@ class Server(LineReceiver):
         self.log     = getLogger('protocol')
 
     def connectionMade(self):
-        pass
+        self.log.info("Connection established ...")
+        self.transport.write("rpync-server ({0})\r\n".format(rpync.version))
+
 
     def connectionLost(self, reason):
         pass
@@ -24,6 +28,10 @@ class Server(LineReceiver):
 class ServerFactory(Factory):
     def __init__(self, config):
         self.config = config
+        self.log    = getLogger()
 
     def buildProtocol(self, addr):
         return Server(self)
+
+    def startFactory(self):
+        self.log.info("Version {0}".format(rpync.version))
