@@ -9,7 +9,11 @@ from twisted.protocols.basic   import LineReceiver
 
 class Server(LineReceiver):
 
-    _errors  = ["ok", "server error", "invalid action", "invalid action: {action}"]
+    _errors  = ["ok",
+                "server error",
+                "invalid action",
+                "invalid action: {action}",
+                "invalid argument for '{action}': {message}"]
     _actions = dict()
 
     def __init__(self, factory, cid):
