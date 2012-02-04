@@ -105,7 +105,7 @@ class BlockChecksum(object):
 
 class RollingChecksum(BlockChecksum):
     def __init__(self, blocksize=512):
-        BlockChecksum.__init__(self, blocksize)
+        super(RollingChecksum, self).__init__(blocksize)
         self._blockoffset = 0L
         self._a = self._b = None
         self._k = self._l = None
@@ -132,7 +132,7 @@ class RollingChecksum(BlockChecksum):
         return (0L,0L,0L)
 
     def close(self):
-        BlockChecksum.close(self)
+        super(RollingChecksum, self).close(self)
         self._blockoffset = 0L
         self._a = self._b = None
         self._k = self._l = None
@@ -145,7 +145,7 @@ class RollingChecksum(BlockChecksum):
                 raise IOError
             return self._a + M * self._b
         else:
-            return BlockChecksum.weak_checksum(self, offset)
+            return super(RollingChecksum, self).weak_checksum(self, offset)
 
     def strong_checksum(self, offset=None):
         if self._file is None:
@@ -165,7 +165,7 @@ class RollingChecksum(BlockChecksum):
                 algo.update(self._block[1][:l+1])
             return algo.hexdigest()
         else:
-            return BlockChecksum.strong_checksum(self, offset)
+            return super(RollingChecksum, self).strong_checksum(self, offset)
 
     def read(self):
         if self._file is None:
