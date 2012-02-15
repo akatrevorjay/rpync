@@ -5,7 +5,7 @@ from stat import *
 from rpync.common.fileinfo.base import Fileinfo
 
 class FileinfoUnix(Fileinfo):
-    def __init__(self, path, basepath, platform='unix'):
+    def __init__(self, path, basepath, platform='Unix'):
         super(FileinfoUnix, self).__init__(path, basepath, platform)
         self.info['unix'] = {
             'inode': self.stat[ST_INO],

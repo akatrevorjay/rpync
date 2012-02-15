@@ -22,7 +22,7 @@ class Fileinfo(object):
         self.fullpath = fullpath
         self.stat     = os.lstat(self.fullpath)
         self.info     = {
-            'platform': 'Linux',
+            'platform': platform,
             'file'    : {
                 'name': os.path.basename(path),
                 'path': os.path.dirname(path),
