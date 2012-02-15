@@ -1,3 +1,5 @@
+import json
+
 from platform                            import system
 from rpync.common.fileinfo.base          import TIME_FORMAT
 from rpync.common.fileinfo.fileinfo_unix import FileinfoUnix
@@ -7,7 +9,7 @@ SUPPORTED_PLATFORMS = {
     'Linux': FileinfoUnix,
 }
 
-def make(path, basepath):
+def make(path, basepath=None):
     platform = system()
     try:
         fileinfo = SUPPORTED_PLATFORMS[platform]()
