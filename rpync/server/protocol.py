@@ -20,7 +20,7 @@ class Server(LineReceiver):
         assert isinstance(factory, ServerFactory)
         self.factory          = factory
         self.config           = self.factory.config
-        self.logger           = getLogger('protocol')
+        self.logger           = getLogger()
         self.cid              = cid
         self._bytes_send      = 0
         self._bytes_received  = 0
@@ -102,3 +102,4 @@ class ServerFactory(Factory):
 
     def startFactory(self):
         self.log.info("version {0}".format(rpync.__version__))
+
