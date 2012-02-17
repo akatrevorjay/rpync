@@ -15,7 +15,7 @@ class Action(object):
         return instance
 
     def __init__(self, name, server):
-        from rpync.server.protocol import Server
+        from rpync.server.server import Server
         
         assert isinstance(name,   basestring)
         assert isinstance(server, Server)

@@ -7,7 +7,7 @@ from time import localtime, strftime
 
 TIME_FORMAT = '%Y%m%d-%H%M%S-%Z'
 
-class Fileinfo(object):
+class FileInfo(object):
 
     class Branch(object):
         def __init__(self, branch):
@@ -77,7 +77,7 @@ class Fileinfo(object):
         try:
             value = self.info[name]
             if isinstance(value, dict):
-                return Fileinfo.Branch(value)
+                return FileInfo.Branch(value)
             return value
         except KeyError, e:
             raise AttributeError, "Unknown attribute: "+name

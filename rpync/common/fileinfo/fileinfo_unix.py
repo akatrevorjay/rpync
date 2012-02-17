@@ -2,11 +2,11 @@ import grp
 import pwd
 
 from stat import *
-from rpync.common.fileinfo.base import Fileinfo
+from rpync.common.fileinfo.base import FileInfo
 
-class FileinfoUnix(Fileinfo):
+class FileInfoUnix(FileInfo):
     def __make__(self, path, basepath, platform):
-        super(FileinfoUnix, self).__make__(path, basepath, platform)
+        super(FileInfoUnix, self).__make__(path, basepath, platform)
         self.info[u'unix'] = {
             u'inode': self.stat[ST_INO],
             u'links': self.stat[ST_NLINK],

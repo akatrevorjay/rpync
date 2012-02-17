@@ -1,13 +1,22 @@
 import os.path
+import re
 
-from ConfigParser import SafeConfigParser as ConfigParser
+from ConfigParser import SafeConfigParser
 
+LIST_PATTERN    = re.compile(r'\s*("[^"]*"|.*?)\s*,')
 SYS_CONFIG_FILE = None
 USR_CONFIG_FILE = None
 DEF_CONFIG_PATH = os.path.dirname(__file__)
 DEF_CONFIG_FILE = None
 CFG             = None
 CFG_TYPE        = None
+
+class ConfigParser(SafeConfigParser):
+    def getlist(self, section, option):
+        value = self.get(section, option)
+        # Credits to: Armin Ronacher (http://stackoverflow.com/users/19990/armin-ronacher)
+        return [x[1:-1] if x[:1] == x[-1:] == '"' else x
+            for x in LIST_PATTERN.findall(value.rstrip(',') + ',')]
 
 def getConfig():
     global CFG
@@ -37,5 +46,4 @@ def initConfig(config_type, config_file=None):
             files.append(config_file)
         CFG.read(files)
         CFG.set('global', 'type', config_type)
-    return CFG
 

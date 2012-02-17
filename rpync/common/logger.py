@@ -18,8 +18,8 @@ def getLogger(*args):
 
 def initLogger(verbose=False, debug=False):
     global LOG, LOG_BASE, LOG_HANDLER
-    cfg = getConfig()
     if LOG is None:
+        cfg      = getConfig()
         LOG_BASE = "rpync."+getConfigType()
         # Set up console formatter and handler
         console_formatter = logging.Formatter("%(name)s %(levelname)s: %(message)s")
@@ -40,5 +40,4 @@ def initLogger(verbose=False, debug=False):
         LOG.setLevel(logging.DEBUG)
         LOG.addHandler(console_handler)
         LOG.addHandler(file_handler)
-    return LOG
 

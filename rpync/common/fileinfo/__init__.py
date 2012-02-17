@@ -2,11 +2,11 @@ import json
 
 from platform                            import system
 from rpync.common.fileinfo.base          import TIME_FORMAT
-from rpync.common.fileinfo.fileinfo_unix import FileinfoUnix
+from rpync.common.fileinfo.fileinfo_unix import FileInfoUnix
 
 SUPPORTED_PLATFORMS = {
-    'Unix' : FileinfoUnix,
-    'Linux': FileinfoUnix,
+    'Unix' : FileInfoUnix,
+    'Linux': FileInfoUnix,
 }
 
 def make(path, basepath=None):
