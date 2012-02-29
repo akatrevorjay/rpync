@@ -19,10 +19,13 @@ def make(path, basepath=None):
         raise IOError, "Unsupported platform: " + platform
 
 def __loadinfo__(value):
-    platform = info[u'platform']
+    try:
+        platform = value[u'platform']
+    except KeyError, e:
+        raise ValueError, "Missing platform attribute"
     try:
         fileinfo = SUPPORTED_PLATFORMS[platform]()
-        fileinfo.__setinfo__(info)
+        fileinfo.__setinfo__(value)
         return fileinfo
     except KeyError, e:
         raise IOError, "Unsupported platform: " + platform
