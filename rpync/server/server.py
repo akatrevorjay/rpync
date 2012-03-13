@@ -6,6 +6,7 @@ from rpync.common.logger       import getLogger
 from rpync.server.actions      import *
 from rpync.server.clientconfig import initClientConfigs
 from rpync.server.jobconfig    import initJobConfigs
+from rpync.server.storage      import initStorage, getStorage
 
 from twisted.internet.protocol import Factory
 from twisted.protocols.basic   import LineReceiver
@@ -23,6 +24,7 @@ class Server(LineReceiver):
         assert isinstance(factory, ServerFactory)
         self.factory          = factory
         self.config           = self.factory.config
+        self.storage          = self.factory.storage
         self.logger           = getLogger()
         self.cid              = cid
         self._bytes_send      = 0
@@ -99,10 +101,14 @@ class ServerFactory(Factory):
         return Server(self, self.counter)
 
     def startFactory(self):
-        self.config  = getConfig()
-        self.log     = getLogger()
-        self.counter = 0L
+        # Bootstrap
+        self.config = getConfig()
+        self.log    = getLogger()
         self.log.info("version {0}".format(rpync.__version__))
+        # Initialize
         initJobConfigs()
         initClientConfigs()
+        initStorage()
+        self.storage = getStorage()
+        self.counter = 0L
 

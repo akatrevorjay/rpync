@@ -20,6 +20,7 @@ class ClientConfig(ConfigParser):
     def __init_config__(self):
         clientdir  = getConfig().get('global', 'clientdir')
         clientfile = os.path.join(clientdir, self.name+".conf")
+        getLogger.info("Loading client configuration: " + self.name)
         self.read(clientfile)
 
 def getClientConfig(name):
@@ -37,6 +38,7 @@ def initClientConfigs():
     if CLIENT_CONFIGS is None:
         log            = getLogger()
         cfg            = getConfig()
+        log.info("Initializing client configurations")
         clientdir      = getConfig().get('global', 'clientdir')
         CLIENT_CONFIGS = dict()
         if os.path.isdir(clientdir):

@@ -20,6 +20,7 @@ class JobConfig(ConfigParser):
     def __init_config__(self):
         jobdir  = getConfig().get('global', 'jobdir')
         jobfile = os.path.join(jobdir, self.name+".conf")
+        getLogger.info("Loading job configuration: " + self.name)
         self.read(jobfile)
 
 def getJobConfig(name):
@@ -37,6 +38,7 @@ def initJobConfigs():
     if JOB_CONFIGS is None:
         log         = getLogger()
         cfg         = getConfig()
+        log.info("Initializing job configurations")
         jobdir      = getConfig().get('global', 'jobdir')
         JOB_CONFIGS = dict()
         if os.path.isdir(jobdir):
