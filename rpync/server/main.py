@@ -42,6 +42,5 @@ def main():
         return 0
     except Exception, e:
         log.error(e)
-        raise
         return 1
 
