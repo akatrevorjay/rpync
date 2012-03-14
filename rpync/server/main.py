@@ -38,10 +38,11 @@ def main():
     try:
         if len(ARGS) > 0:
             raise ValueError, "Invalid arguments: "+args
-        reactor.listenTCP(1079, ServerFactory())
+        reactor.listenTCP(1080, ServerFactory())
         reactor.run()
         return 0
     except Exception, e:
         log.error(e)
+        raise
         return 1
 
