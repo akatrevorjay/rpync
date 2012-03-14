@@ -32,7 +32,6 @@ def main():
         log = getLogger()
     except Exception, e:
         print "Error:", e
-        raise
         return 1
 
     try:
