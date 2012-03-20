@@ -15,6 +15,9 @@ ERRORS = ["ok",
           "invalid action: {action}",
           "invalid argument for '{action}': {message}"]
 
+class ActionError(Exception):
+    pass
+
 class Action(object):
 
     short_options = ""
@@ -40,6 +43,10 @@ class Action(object):
                 self.server.writeOk()
         except GetoptError, e:
             self.server.writeError(ERRORS[4], action=self.name, message=str(e))
+        except ActionError, e:
+            msg = str(e)
+            self.server.logError(msg)
+            self.server.writeError(msg)
         except Exception, e:
             self.server.logDebug("exception raised", exc_info=True)
             self.server.writeError(ERRORS[1])
@@ -111,7 +118,7 @@ class BaseServer(LineReceiver):
         self.logger.critical("[{0}] {1}".format(self.cid, message.format(*args, **kwargs)))
 
     def writeOk(self):
-        self.transport.write("{0}\r\n".format(self.errors[0]))
+        self.transport.write("{0}\r\n".format(ERRORS[0]))
 
     def writeError(self, error, **kwargs):
         message = error.format(**kwargs)
