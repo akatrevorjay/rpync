@@ -34,38 +34,38 @@ class FileInfo(object):
             fullpath = os.path.join(basepath, path)
         else:
             assert os.path.isabs(path)
-            fullpath = path
+            fullpath = os.path.normpath(path)
             basepath = '/'
-            path     = os.path.relpath(path, basepath)
+            path     = fullpath
         assert os.path.lexists(fullpath)
         stat      = os.lstat(fullpath)
         self.info = {
-            u'platform' : unicode(platform),
-            u'file'     : {
-                u'name' : unicode(os.path.basename(path)),
-                u'path' : unicode(os.path.dirname(path)),
-                u'atime': unicode(strftime(TIME_FORMAT, localtime(stat[ST_ATIME]))),
-                u'mtime': unicode(strftime(TIME_FORMAT, localtime(stat[ST_MTIME]))),
-                u'ctime': unicode(strftime(TIME_FORMAT, localtime(stat[ST_CTIME]))),
+            'platform' : platform,
+            'file'     : {
+                'name' : os.path.basename(path),
+                'path' : os.path.dirname(path),
+                'atime': strftime(TIME_FORMAT, localtime(stat[ST_ATIME])),
+                'mtime': strftime(TIME_FORMAT, localtime(stat[ST_MTIME])),
+                'ctime': strftime(TIME_FORMAT, localtime(stat[ST_CTIME])),
             },
         }
         mode = stat[ST_MODE]
         if S_ISDIR(mode):
-            self.info['file'][u'type'] = u'DIR'
+            self.info['file']['type'] = 'DIR'
         elif S_ISCHR(mode):
-            self.info['file'][u'type'] = u'CHR'
+            self.info['file']['type'] = 'CHR'
         elif S_ISBLK(mode):
-            self.info['file'][u'type'] = u'BLK'
+            self.info['file']['type'] = 'BLK'
         elif S_ISREG(mode):
-            self.info['file'][u'type'] = u'REG'
-            self.info['file'][u'size'] = stat[ST_SIZE]
+            self.info['file']['type'] = 'REG'
+            self.info['file']['size'] = stat[ST_SIZE]
         elif S_ISFIFO(mode):
-            self.info['file'][u'type'] = u'FIF'
+            self.info['file']['type'] = 'FIF'
         elif S_ISLNK(mode):
-            self.info['file'][u'type'] = u'LNK'
-            self.info['file'][u'link'] = os.readlink(fullpath)
+            self.info['file']['type'] = 'LNK'
+            self.info['file']['link'] = os.readlink(fullpath)
         elif S_ISSOCK(mode):
-            self.info['file'][u'type'] = u'SOC'
+            self.info['file']['type'] = 'SOC'
         self.__make_ext__(path, basepath, fullpath, stat, platform)
 
     def __setinfo__(self, info):

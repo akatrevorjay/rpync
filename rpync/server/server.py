@@ -12,12 +12,8 @@ class Server(BaseServer):
     def __init__(self, factory, cid):
         assert isinstance(factory, ServerFactory)
         BaseServer.__init__(self, factory, cid)
-        self.storage         = self.factory.storage
-        self.actions['quit'] = ActionQuit('quit', self)
-        self.actions['exit'] = ActionQuit('exit', self)
-
-    def getAction(self, name):
-        return self.actions[name]
+        self.storage = self.factory.storage
+        self.setAction(ActionQuit(self), 'exit')
 
     def getGreeting(self):
         return "rpync-server ({0})\r\n".format(rpync.__version__)

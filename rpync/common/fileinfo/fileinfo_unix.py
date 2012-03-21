@@ -6,13 +6,13 @@ from rpync.common.fileinfo.base import FileInfo
 
 class FileInfoUnix(FileInfo):
     def __make_ext__(self, path, basepath, fullpath, stat, platform):
-        self.info[u'unix'] = {
-            u'inode': stat[ST_INO],
-            u'links': stat[ST_NLINK],
-            u'uid'  : stat[ST_UID],
-            u'gid'  : stat[ST_GID],
-            u'user' : unicode(pwd.getpwuid(stat[ST_UID]).pw_name),
-            u'group': unicode(grp.getgrgid(stat[ST_GID]).gr_name),
+        self.info['unix'] = {
+            'inode': stat[ST_INO],
+            'links': stat[ST_NLINK],
+            'uid'  : stat[ST_UID],
+            'gid'  : stat[ST_GID],
+            'user' : pwd.getpwuid(stat[ST_UID]).pw_name,
+            'group': grp.getgrgid(stat[ST_GID]).gr_name,
         }
 
     def __setinfo__(self, info):

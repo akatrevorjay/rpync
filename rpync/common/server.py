@@ -1,3 +1,4 @@
+import re
 import sys
 import rpync
 
@@ -14,6 +15,7 @@ ERRORS = ["ok",
           "invalid action",
           "invalid action: {action}",
           "invalid argument for '{action}': {message}"]
+RE_NAME = re.compile(r'^\w+$')
 
 class ActionError(Exception):
     pass
@@ -23,7 +25,7 @@ class Action(object):
     short_options = ""
     long_options  = []
 
-    def __new__(cls, name, server):
+    def __new__(cls, *args):
         instance = super(Action, cls).__new__(cls)
         for varname in ('short_options', 'long_options'):
             if hasattr(cls, varname):
@@ -31,7 +33,7 @@ class Action(object):
         return instance
 
     def __init__(self, name, server):
-        assert isinstance(name,   basestring)
+        assert isinstance(name,   basestring) and RE_NAME.match(name)
         assert isinstance(server, BaseServer)
         self.server = server
         self.name   = name
@@ -57,13 +59,25 @@ class Action(object):
 class BaseServer(LineReceiver):
     def __init__(self, factory, cid):
         assert isinstance(factory, BaseServerFactory)
-        self.factory = factory
-        self.config  = self.factory.config
-        self.logger  = getLogger()
-        self.cid     = cid
+        self.factory  = factory
+        self.config   = self.factory.config
+        self.logger   = getLogger()
+        self.cid      = cid
+        self._actions = dict()
+
+    def hasAction(self, name):
+        return name in self._actions
 
     def getAction(self, name):
-        raise NotImplementedError
+        return self._actions[name]
+
+    def setAction(self, action, *aliases):
+        assert isinstance(action, Action)
+        self._actions[action.name] = action
+        for name in aliases:
+            if not RE_NAME.match(name):
+                raise ValueError, "invalid name: " + name
+            self._actions[name] = action
 
     def getGreeting(self):
         raise NotImplementedError
