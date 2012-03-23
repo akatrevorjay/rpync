@@ -15,7 +15,7 @@ class Agent(BaseServer):
         assert isinstance(factory, AgentFactory)
         BaseServer.__init__(self, factory, cid)
         self._state = STATE_NONE
-        self.setAction(ActionAbort(self))
+        self.setAction(ActionAbort(self), 'reset', 'clear')
         self.setAction(ActionBackup(self))
         self.setAction(ActionClose(self))
         self.setAction(ActionExclude(self), 'exc')

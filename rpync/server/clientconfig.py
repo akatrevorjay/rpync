@@ -22,6 +22,8 @@ class ClientConfig(ConfigParser):
         clientfile = os.path.join(clientdir, self.name+".conf")
         getLogger.info("Loading client configuration: " + self.name)
         self.read(clientfile)
+        if not (self.has_section('client') and self.has_option('client', 'address')):
+            raise ValueError, "Invalid job configuration"
 
 def getClientConfig(name):
     global CLIENT_CONFIGS

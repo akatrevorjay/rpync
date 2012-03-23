@@ -22,6 +22,8 @@ class JobConfig(ConfigParser):
         jobfile = os.path.join(jobdir, self.name+".conf")
         getLogger.info("Loading job configuration: " + self.name)
         self.read(jobfile)
+        if not self.has_section('job'):
+            raise ValueError, "Invalid job configuration"
 
 def getJobConfig(name):
     global JOB_CONFIGS
