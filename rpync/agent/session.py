@@ -1,6 +1,11 @@
 import os.path
 import re
 
+from rpync.common.server import ActionError
+
+class SessionError(ActionError):
+    pass
+
 class Session(object):
     def __init__(self):
         self._includes = list()
@@ -50,7 +55,7 @@ class Session(object):
 
     def commit(self):
         if len(self._includes) == 0:
-            return "no includes specified"
+            raise SessionError, "no includes specified"
         includes = list()
         for include in self._includes:
             for prefix in includes:
@@ -64,4 +69,4 @@ class Session(object):
         self._excludes = tuple(self._excludes)
         self._basedir  = iter(self._includes)
         self._walker   = None
-        return None
+

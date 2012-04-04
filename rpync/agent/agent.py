@@ -1,7 +1,7 @@
 import rpync
 
 from rpync.agent.actions import *
-from rpync.agent.session import Session
+from rpync.agent.session import Session, SessionError
 from rpync.agent.states  import *
 from rpync.common.server import ActionError, BaseServer, BaseServerFactory
 
@@ -62,9 +62,10 @@ class Agent(BaseServer):
         self.error   = None
 
     def switch_all2running(self):
-        reason = self.session.commit()
-        if reason is not None:
-            raise TransitionError, "invalid session: " + reason
+        try:
+            reason = self.session.commit()
+        except SessionError, e:
+            raise TransitionError, "invalid session: " + str(e)
 
 class AgentFactory(BaseServerFactory):
     def __newServer__(self, addr):
