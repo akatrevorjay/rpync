@@ -11,7 +11,7 @@ class ClientConfig(ConfigParser):
         global CLIENT_CONFIGS
         if CLIENT_CONFIGS is None:
             raise ValueError, "Client configurations are not inizialized"
-        super(ClientConfig, self).__init__()
+        ConfigParser.__init__(self)
         if name in CLIENT_CONFIGS and isinstance(CLIENT_CONFIGS[name], ClientConfig):
             raise ValueError, "Duplicate client configuration: "+name
         self.name = name
@@ -20,7 +20,7 @@ class ClientConfig(ConfigParser):
     def __init_config__(self):
         clientdir  = getConfig().get('global', 'clientdir')
         clientfile = os.path.join(clientdir, self.name+".conf")
-        getLogger.info("Loading client configuration: " + self.name)
+        getLogger().info("Loading client configuration: " + self.name)
         self.read(clientfile)
         if not (self.has_section('client') and self.has_option('client', 'address')):
             raise ValueError, "Invalid job configuration"

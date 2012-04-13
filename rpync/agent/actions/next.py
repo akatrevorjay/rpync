@@ -18,8 +18,8 @@ class ActionNext(Action):
             try:
                 return self.doWalk(*self.server.session.nextWalker())
             except StopIteration:
-                self.server.transport.write("finnished\r\n")
-                return False
+                self.server.transport.write("finished\r\n")
+                return True
 
     def doWalk(self, basedir, walker):
         excludes          = self.server.session.getExcludes()

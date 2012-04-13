@@ -68,6 +68,6 @@ class Agent(BaseServer):
             raise TransitionError, "invalid session: " + str(e)
 
 class AgentFactory(BaseServerFactory):
-    def __newServer__(self, addr):
+    def __newProtocol__(self, addr):
         return Agent(self, self.counter)
 

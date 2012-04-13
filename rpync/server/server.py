@@ -13,13 +13,14 @@ class Server(BaseServer):
         assert isinstance(factory, ServerFactory)
         BaseServer.__init__(self, factory, cid)
         self.storage = self.factory.storage
+        self.setAction(ActionBackup(self))
         self.setAction(ActionQuit(self), 'exit')
 
     def getGreeting(self):
         return "rpync-server ({0})\r\n".format(rpync.__version__)
 
 class ServerFactory(BaseServerFactory):
-    def __newServer__(self, addr):
+    def __newProtocol__(self, addr):
         return Server(self, self.counter)
 
     def startFactory(self):

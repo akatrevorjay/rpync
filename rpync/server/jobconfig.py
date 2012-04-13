@@ -11,7 +11,7 @@ class JobConfig(ConfigParser):
         global JOB_CONFIGS
         if JOB_CONFIGS is None:
             raise ValueError, "Job configurations are not inizialized"
-        super(JobConfig, self).__init__()
+        ConfigParser.__init__(self)
         if name in JOB_CONFIGS and isinstance(JOB_CONFIGS[name], JobConfig):
             raise ValueError, "Duplicate job configuration: "+name
         self.name = name
@@ -20,7 +20,7 @@ class JobConfig(ConfigParser):
     def __init_config__(self):
         jobdir  = getConfig().get('global', 'jobdir')
         jobfile = os.path.join(jobdir, self.name+".conf")
-        getLogger.info("Loading job configuration: " + self.name)
+        getLogger().info("Loading job configuration: " + self.name)
         self.read(jobfile)
         if not self.has_section('job'):
             raise ValueError, "Invalid job configuration"

@@ -13,7 +13,7 @@ class JobInfo(object):
         self.address  = clientconfig.get('client', 'address')
         self.port     = 1081
         if clientconfig.has_option(section, 'base'):
-            jobconfig = getJobConfig(name)
+            jobconfig = getJobConfig(clientconfig.get(section, 'base'))
             if jobconfig.has_option('job', 'includes'):
                 self.includes.update(jobconfig.getlist('job', 'includes'))
             if jobconfig.has_option('job', 'excludes'):

@@ -4,11 +4,9 @@ import rpync
 
 from getopt import getopt, GetoptError
 
-from rpync.common.config import getConfig
-from rpync.common.logger import getLogger
-
-from twisted.internet.protocol import Factory
-from twisted.protocols.basic   import LineReceiver
+from rpync.common.config   import getConfig
+from rpync.common.logger   import getLogger
+from rpync.common.protocol import BaseProtocol, BaseServerProtocolFactory
 
 ERRORS = ["ok",
           "server error",
@@ -56,13 +54,11 @@ class Action(object):
     def doAction(self, options, args):
         raise NotImplementedError
 
-class BaseServer(LineReceiver):
+class BaseServer(BaseProtocol):
     def __init__(self, factory, cid):
         assert isinstance(factory, BaseServerFactory)
-        self.factory  = factory
+        BaseProtocol.__init__(self, factory, cid)
         self.config   = self.factory.config
-        self.logger   = getLogger()
-        self.cid      = cid
         self._actions = dict()
 
     def hasAction(self, name):
@@ -83,15 +79,9 @@ class BaseServer(LineReceiver):
         raise NotImplementedError
 
     def connectionMade(self):
-        self.logInfo("connection established ...")
-        self.logInfo("peer: {0}", self.transport.getPeer())
+        BaseProtocol.connectionMade(self)
         self.transport.write(self.getGreeting())
         self.logInfo("waiting for input")
-
-    def connectionLost(self, reason):
-        self.logInfo("closing connection ...")
-        self.logInfo("reason: {0}", reason.getErrorMessage())
-        self.logInfo("connection closed.")
 
     def lineReceived(self, line):
         line = line.strip()
@@ -109,28 +99,6 @@ class BaseServer(LineReceiver):
     def rawDataReceived(self, data):
         pass
 
-    def logException(self, message, *args, **kwargs):
-        self.logger.exception("[{0}] {1}".format(self.cid, message.format(*args, **kwargs)))
-
-    def logDebug(self, message, *args, **kwargs):
-        exc_info = False
-        if 'exc_info' in kwargs:
-            exc_info = True
-            del kwargs['exc_info']
-        self.logger.debug("[{0}] {1}".format(self.cid, message.format(*args, **kwargs)), exc_info=exc_info)
-
-    def logInfo(self, message, *args, **kwargs):
-        self.logger.info("[{0}] {1}".format(self.cid, message.format(*args, **kwargs)))
-
-    def logWarning(self, message, *args, **kwargs):
-        self.logger.warning("[{0}] {1}".format(self.cid, message.format(*args, **kwargs)))
-
-    def logError(self, message, *args, **kwargs):
-        self.logger.error("[{0}] {1}".format(self.cid, message.format(*args, **kwargs)))
-
-    def logCritical(self, message, *args, **kwargs):
-        self.logger.critical("[{0}] {1}".format(self.cid, message.format(*args, **kwargs)))
-
     def writeOk(self):
         self.transport.write("{0}\r\n".format(ERRORS[0]))
 
@@ -139,19 +107,11 @@ class BaseServer(LineReceiver):
         self.logError(message)
         self.transport.write("error: {0}\r\n".format(message))
 
-class BaseServerFactory(Factory):
-    def __newServer__(self, addr):
-        raise NotImplementedError
-
-    def buildProtocol(self, addr):
-        self.counter += 1L
-        return self.__newServer__(addr)
-
+class BaseServerFactory(BaseServerProtocolFactory):
     def startFactory(self):
+        BaseServerProtocolFactory.startFactory(self)
         # Bootstrap
         self.config = getConfig()
         self.log    = getLogger()
         self.log.info("version {0}".format(rpync.__version__))
-        # Initialize
-        self.counter = 0L
 
