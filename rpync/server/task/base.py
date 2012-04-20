@@ -2,7 +2,7 @@ from rpync.common.protocol import BaseProtocol, BaseClientProtocolFactory
 from rpync.server.jobinfo  import JobInfo
 
 from twisted.internet          import reactor
-#from twisted.internet.protocol import ClientFactory
+from twisted.internet.protocol import ClientFactory
 
 COMMANDMAP = {
     'abort'  : 'abort',
@@ -23,10 +23,15 @@ COMMANDMAP = {
 }
 
 class Task(object):
-    def __init__(self, jobinfo):
-        assert isinstance(jobinfo, JobInfo)
-        self.factory  = TaskFactory(self)
-        self.jobinfo  = jobinfo
+    def run(self):
+        raise NotImplementedError
+
+class RemoteTask(Task):
+    def __init__(self, address, port, factory):
+        assert isinstance(factory, ClientFactory)
+        self.address  = address
+        self.port     = port
+        self.factory  = factory
         self.protocol = None
 
     def init(self):
@@ -42,14 +47,18 @@ class Task(object):
         pass
 
     def run(self):
-        reactor.connectTCP(self.jobinfo.address, self.jobinfo.port, self.factory)
+        reactor.connectTCP(self.address, self.port, self.factory)
 
-class TaskProtocol(BaseProtocol):
+class AgentTask(RemoteTask):
+    def __init__(self, address, port):
+        super(AgentTask, self).__init__(address, port, AgentTaskFactory(self))
+
+class AgentTaskProtocol(BaseProtocol):
     CONNECTED, INITIALIZED, RUNNING, FINISHED, ERROR = range(5)
 
-    def __init__(self, factory, cid):
-        assert isinstance(factory, TaskFactory)
-        BaseProtocol.__init__(self, factory, cid)
+    def __init__(self, factory, pid):
+        assert isinstance(factory, AgentTaskFactory)
+        BaseProtocol.__init__(self, factory, pid, 'task')
         self.task   = self.factory.task
         self.state  = None
         self.error  = None
@@ -152,11 +161,11 @@ class TaskProtocol(BaseProtocol):
         print ">>> " + command
         self.transport.write(command + "\r\n")
 
-class TaskFactory(BaseClientProtocolFactory):
+class AgentTaskFactory(BaseClientProtocolFactory):
     def __init__(self, task):
-        assert isinstance(task, Task)
+        assert isinstance(task, AgentTask)
         self.task = task
 
-    def __newProtocol__(self, addr):
-        return TaskProtocol(self, self.counter)
+    def __newProtocol__(self, addr, pid):
+        return AgentTaskProtocol(self, pid)
 

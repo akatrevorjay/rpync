@@ -1,14 +1,21 @@
+import threading
+
 from rpync.common.logger import getLogger
 
 from twisted.internet.protocol import ClientFactory, Factory
 from twisted.protocols.basic   import LineReceiver
 
 class BaseProtocol(LineReceiver):
-    def __init__(self, factory, cid):
+    def __init__(self, factory, pid, *args):
+        args = list(args)
+        args.append(str(pid))
         assert isinstance(factory, BaseServerProtocolFactory) or isinstance(factory, BaseClientProtocolFactory)
         self.factory = factory
-        self.logger  = getLogger()
-        self.cid     = cid
+        self.log     = self.createLogger(*args)
+        self.pid     = pid
+
+    def createLogger(self, *args):
+        return getLogger(*args)
 
     def connectionMade(self):
         self.logInfo("connection established ...")
@@ -20,48 +27,49 @@ class BaseProtocol(LineReceiver):
         self.logInfo("connection closed.")
 
     def logException(self, message, *args, **kwargs):
-        self.logger.exception("[{0}] {1}".format(self.cid, message.format(*args, **kwargs)))
+        self.log.exception(message.format(*args, **kwargs))
 
     def logDebug(self, message, *args, **kwargs):
         exc_info = False
         if 'exc_info' in kwargs:
             exc_info = True
             del kwargs['exc_info']
-        self.logger.debug("[{0}] {1}".format(self.cid, message.format(*args, **kwargs)), exc_info=exc_info)
+        self.log.debug(message.format(*args, **kwargs), exc_info=exc_info)
 
     def logInfo(self, message, *args, **kwargs):
-        self.logger.info("[{0}] {1}".format(self.cid, message.format(*args, **kwargs)))
+        self.log.info(message.format(*args, **kwargs))
 
     def logWarning(self, message, *args, **kwargs):
-        self.logger.warning("[{0}] {1}".format(self.cid, message.format(*args, **kwargs)))
+        self.log.warning(message.format(*args, **kwargs))
 
     def logError(self, message, *args, **kwargs):
-        self.logger.error("[{0}] {1}".format(self.cid, message.format(*args, **kwargs)))
+        self.log.error(message.format(*args, **kwargs))
 
     def logCritical(self, message, *args, **kwargs):
-        self.logger.critical("[{0}] {1}".format(self.cid, message.format(*args, **kwargs)))
+        self.log.critical(message.format(*args, **kwargs))
+
+counter     = 0L
+counterLock = threading.Lock()
 
 class BaseServerProtocolFactory(Factory):
-    def __newProtocol__(self, addr):
+    def __newProtocol__(self, addr, pid):
         raise NotImplementedError
 
     def buildProtocol(self, addr):
-        self.counter += 1L
-        return self.__newProtocol__(addr)
-
-    def startFactory(self):
-        # Initialize
-        self.counter = 0L
+        global counter, counterLock
+        with counterLock:
+            counter += 1
+            pid      = counter
+        return self.__newProtocol__(addr, pid)
 
 class BaseClientProtocolFactory(ClientFactory):
-    def __newProtocol__(self, addr):
+    def __newProtocol__(self, addr, pid):
         raise NotImplementedError
 
     def buildProtocol(self, addr):
-        self.counter += 1L
-        return self.__newProtocol__(addr)
-
-    def startFactory(self):
-        # Initialize
-        self.counter = 0L
+        global counter, counterLock
+        with counterLock:
+            counter += 1
+            pid      = counter
+        return self.__newProtocol__(addr, pid)
 

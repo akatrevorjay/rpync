@@ -11,13 +11,11 @@ class ActionBackup(Action):
         if len(args) != 2:
             raise ActionError, "usage: backup <client> <job>"
         try:
-            clientconfig = getClientConfig(args[0])
-        except KeyError:
-            raise ActionError, "unknown client: " + args[0]
-        try:
-            jobinfo = JobInfo(clientconfig, args[1])
+            jobinfo = JobInfo(args[0], args[1])
         except ValueError:
             raise ActionError, "unknown job: " + args[1]
+        except KeyError:
+            raise ActionError, "unknown client: " + args[0]
         task = BackupTask(jobinfo)
         task.run()
-        return False
+        return True

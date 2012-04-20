@@ -11,9 +11,9 @@ class TransitionError(ActionError):
     pass
 
 class Agent(BaseServer):
-    def __init__(self, factory, cid):
+    def __init__(self, factory, pid):
         assert isinstance(factory, AgentFactory)
-        BaseServer.__init__(self, factory, cid)
+        BaseServer.__init__(self, factory, pid)
         self._state = STATE_NONE
         self.setAction(ActionAbort(self), 'reset', 'clear')
         self.setAction(ActionBackup(self))
@@ -51,7 +51,9 @@ class Agent(BaseServer):
         if start is None:
             start = self._state
         if not self.validTransition(start, end):
-            raise TransitionError, "invalid transition: {0} -> {1}".format(start, end)
+            msg = "invalid transition: {0} -> {1}".format(start, end)
+            self.log.error(msg)
+            raise TransitionError, msg
 
     def switch_all2none(self):
         self.session = None
@@ -65,9 +67,11 @@ class Agent(BaseServer):
         try:
             reason = self.session.commit()
         except SessionError, e:
-            raise TransitionError, "invalid session: " + str(e)
+            msg = "invalid session: " + str(e)
+            self.log.error(msg)
+            raise TransitionError, msg
 
 class AgentFactory(BaseServerFactory):
-    def __newProtocol__(self, addr):
-        return Agent(self, self.counter)
+    def __newProtocol__(self, addr, pid):
+        return Agent(self, pid)
 

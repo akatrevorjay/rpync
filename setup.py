@@ -5,7 +5,7 @@ version = '0.1alpha0'
 
 setup(name='rpync',
       version=version,
-      description="Backup utility using rsync for the heavy work and ssh for transport",
+      description="Backup utility using rsync algorithm for file synchornization",
       long_description="""\
 """,
       # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers

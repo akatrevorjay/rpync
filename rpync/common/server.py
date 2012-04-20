@@ -55,9 +55,9 @@ class Action(object):
         raise NotImplementedError
 
 class BaseServer(BaseProtocol):
-    def __init__(self, factory, cid):
+    def __init__(self, factory, pid):
         assert isinstance(factory, BaseServerFactory)
-        BaseProtocol.__init__(self, factory, cid)
+        BaseProtocol.__init__(self, factory, pid)
         self.config   = self.factory.config
         self._actions = dict()
 

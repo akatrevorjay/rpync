@@ -10,25 +10,33 @@ class JobConfig(ConfigParser):
     def __init__(self, name):
         global JOB_CONFIGS
         if JOB_CONFIGS is None:
-            raise ValueError, "Job configurations are not inizialized"
+            msg = "job configurations are not inizialized"
+            getLogger().error(msg)
+            raise ValueError, msg
         ConfigParser.__init__(self)
         if name in JOB_CONFIGS and isinstance(JOB_CONFIGS[name], JobConfig):
-            raise ValueError, "Duplicate job configuration: "+name
+            msg = "duplicate job configuration: "+name
+            getLogger().error(msg)
+            raise ValueError, msg
         self.name = name
         self.__init_config__()
 
     def __init_config__(self):
         jobdir  = getConfig().get('global', 'jobdir')
         jobfile = os.path.join(jobdir, self.name+".conf")
-        getLogger().info("Loading job configuration: " + self.name)
+        getLogger().info("loading job configuration: " + self.name)
         self.read(jobfile)
         if not self.has_section('job'):
-            raise ValueError, "Invalid job configuration"
+            msg = "invalid job configuration"
+            getLogger().error(msg)
+            raise ValueError, msg
 
 def getJobConfig(name):
     global JOB_CONFIGS
     if JOB_CONFIGS is None:
-        raise ValueError, "Job configurations are not inizialized"
+        msg = "job configurations are not inizialized"
+        getLogger().error(msg)
+        raise ValueError, msg
     config = JOB_CONFIGS[name]
     if config == name:
         config            = JobConfig(name)
@@ -40,7 +48,7 @@ def initJobConfigs():
     if JOB_CONFIGS is None:
         log         = getLogger()
         cfg         = getConfig()
-        log.info("Initializing job configurations")
+        log.info("initializing job configurations")
         jobdir      = getConfig().get('global', 'jobdir')
         JOB_CONFIGS = dict()
         if os.path.isdir(jobdir):
@@ -50,5 +58,5 @@ def initJobConfigs():
                 if os.path.isfile(filename) and ext == '.conf':
                     JOB_CONFIGS[name] = name
         else:
-            log.error("Job directory doesn't exist: {0}".format(jobdir))
+            log.error("job directory doesn't exist: {0}".format(jobdir))
 

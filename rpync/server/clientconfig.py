@@ -10,25 +10,33 @@ class ClientConfig(ConfigParser):
     def __init__(self, name):
         global CLIENT_CONFIGS
         if CLIENT_CONFIGS is None:
-            raise ValueError, "Client configurations are not inizialized"
+            msg = "client configurations are not inizialized"
+            getLogger().error(msg)
+            raise ValueError, msg
         ConfigParser.__init__(self)
         if name in CLIENT_CONFIGS and isinstance(CLIENT_CONFIGS[name], ClientConfig):
-            raise ValueError, "Duplicate client configuration: "+name
+            msg = "duplicate client configuration: "+name
+            getLogger().error(msg)
+            raise ValueError, msg
         self.name = name
         self.__init_config__()
 
     def __init_config__(self):
         clientdir  = getConfig().get('global', 'clientdir')
         clientfile = os.path.join(clientdir, self.name+".conf")
-        getLogger().info("Loading client configuration: " + self.name)
+        getLogger().info("loading client configuration: " + self.name)
         self.read(clientfile)
         if not (self.has_section('client') and self.has_option('client', 'address')):
-            raise ValueError, "Invalid job configuration"
+            msg = "invalid job configuration"
+            getLogger().error(msg)
+            raise ValueError, msg
 
 def getClientConfig(name):
     global CLIENT_CONFIGS
     if CLIENT_CONFIGS is None:
-        raise ValueError, "Client configurations are not inizialized"
+        msg = "client configurations are not inizialized"
+        getLogger().error(msg)
+        raise ValueError, msg
     config = CLIENT_CONFIGS[name]
     if config == name:
         config               = ClientConfig(name)
@@ -40,7 +48,7 @@ def initClientConfigs():
     if CLIENT_CONFIGS is None:
         log            = getLogger()
         cfg            = getConfig()
-        log.info("Initializing client configurations")
+        log.info("initializing client configurations")
         clientdir      = getConfig().get('global', 'clientdir')
         CLIENT_CONFIGS = dict()
         if os.path.isdir(clientdir):
@@ -50,5 +58,5 @@ def initClientConfigs():
                 if os.path.isfile(filename) and ext == '.conf':
                     CLIENT_CONFIGS[name] = name
         else:
-            log.error("Client directory doesn't exist: {0}".format(clientdir))
+            log.error("client directory doesn't exist: {0}".format(clientdir))
 

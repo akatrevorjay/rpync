@@ -9,9 +9,9 @@ from rpync.server.storage      import initStorage, getStorage
 class Server(BaseServer):
     actions = dict()
 
-    def __init__(self, factory, cid):
+    def __init__(self, factory, pid):
         assert isinstance(factory, ServerFactory)
-        BaseServer.__init__(self, factory, cid)
+        BaseServer.__init__(self, factory, pid)
         self.storage = self.factory.storage
         self.setAction(ActionBackup(self))
         self.setAction(ActionQuit(self), 'exit')
@@ -20,8 +20,8 @@ class Server(BaseServer):
         return "rpync-server ({0})\r\n".format(rpync.__version__)
 
 class ServerFactory(BaseServerFactory):
-    def __newProtocol__(self, addr):
-        return Server(self, self.counter)
+    def __newProtocol__(self, addr, pid):
+        return Server(self, pid)
 
     def startFactory(self):
         BaseServerFactory.startFactory(self)
