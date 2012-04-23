@@ -1,8 +1,8 @@
-from rpync.common.config             import getConfig, ConfigParser
-from rpync.common.logger             import getLogger
-from rpync.server.storage.base       import BaseStorage
-from rpync.server.storage.file       import FileStorage
-from rpync.server.storage.interfaces import IStorage
+from rpync.common.config      import getConfig, ConfigParser
+from rpync.common.logger      import getLogger
+from rpync.storage.base       import BaseStorage
+from rpync.storage.file       import FileStorage
+from rpync.storage.interfaces import IStorage
 
 STORAGE_INSTANCE = None
 SECTION          = 'storage'
@@ -32,10 +32,3 @@ def initStorage():
         getLogger().info("initializing storage")
         STORAGE_INSTANCE = createStorage(getConfig(), SECTION)
 
-#        config             = getConfig()
-#        package, classname = config.get(SECTION, 'class').rsplit('.', 1)
-#        module             = __import__(package, fromlist=[classname])
-#        storageClass       = getattr(module, classname)
-#        if not IStorage.implementedBy(storageClass):
-#            raise ValueError, "'{0}.{1}' does not implement IStorage interface".format(package, classname)
-#        STORAGE_INSTANCE = storageClass(SECTION)

@@ -2,9 +2,9 @@ import threading
 
 from zope.interface import implements
 
-from rpync.common.config             import getConfig
-from rpync.common.logger             import getLogger
-from rpync.server.storage.interfaces import IStorage, IStorageJob
+from rpync.common.config      import getConfig
+from rpync.common.logger      import getLogger
+from rpync.storage.interfaces import IStorage, IStorageJob
 
 counter     = 0L
 counterLock = threading.Lock()

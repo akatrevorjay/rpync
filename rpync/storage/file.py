@@ -3,7 +3,7 @@ import os.path
 
 from stat import *
 
-from rpync.server.storage.base import BaseStorage, BaseStorageJob
+from rpync.storage.base import BaseStorage, BaseStorageJob
 
 DIR_ACCESS  = 0750
 FILE_ACCESS = 0750

@@ -4,7 +4,7 @@ from rpync.common.server       import BaseServer, BaseServerFactory
 from rpync.server.actions      import *
 from rpync.server.clientconfig import initClientConfigs
 from rpync.server.jobconfig    import initJobConfigs
-from rpync.server.storage      import initStorage, getStorage
+from rpync.storage             import initStorage, getStorage
 
 class Server(BaseServer):
     actions = dict()

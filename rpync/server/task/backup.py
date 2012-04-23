@@ -1,6 +1,6 @@
 from rpync.server.jobinfo   import JobInfo
-from rpync.server.storage   import getStorage
 from rpync.server.task.base import AgentTask
+from rpync.storage          import getStorage
 
 class BackupTask(AgentTask):
     def __init__(self, jobinfo):
