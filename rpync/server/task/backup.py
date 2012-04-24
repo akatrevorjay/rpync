@@ -13,7 +13,9 @@ class BackupTask(AgentTask):
     def init(self):
         super(BackupTask, self).init()
         self.storage    = getStorage()
-        self.storageJob = self.storage.createJob(self.jobinfo.clientName, self.jobinfo.jobName)
+        self.storageJob = self.storage.createJob(self.jobinfo.clientName,\
+                                                 self.jobinfo.jobName,\
+                                                 self.jobinfo.timestamp)
 
     def done(self):
         if self.storageJob is not None:

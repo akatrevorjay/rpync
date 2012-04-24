@@ -41,3 +41,7 @@ class BaseStorageJob(object):
 
     def close(self):
         pass
+
+    def processFile(self, fileinfo):
+        raise NotImplementedError
+

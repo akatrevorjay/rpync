@@ -1,8 +1,11 @@
+from time import gmtime
+
 from rpync.server.clientconfig import getClientConfig
 from rpync.server.jobconfig    import getJobConfig
 
 class JobInfo(object):
     def __init__(self, clientName, jobName):
+        self.timestamp    = gmtime()
         self.clientName   = clientName
         self.jobName      = jobName
         self.clientConfig = getClientConfig(clientName)

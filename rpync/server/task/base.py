@@ -86,7 +86,7 @@ class AgentTaskProtocol(BaseProtocol):
         if self.task.error(self.sended[0], self.sended[1], error):
             self.state = self.ERROR
             self.error = error
-            self.task.logger.error(self.error)
+            self.log.error(self.error)
             self.transport.loseConnection()
             return True
         return False
@@ -116,7 +116,7 @@ class AgentTaskProtocol(BaseProtocol):
         if self.state == self.INITIALIZED:
             if not line.startswith('rpync-agent'):
                 self.state = self.ERROR
-                self.task.logger.error("invalid agent greeting: " + line)
+                self.log.error("invalid agent greeting: " + line)
                 self.transport.loseConnection()
             else:
                 self.invokeNext()
