@@ -3,12 +3,14 @@ import os
 import os.path
 
 from stat import *
-from time import strftime
+from time import strftime, strptime
 
-from rpync.storage.base import BaseStorage, BaseStorageJob
+from rpync.common.fileinfo import FileInfo
+from rpync.storage.base    import BaseStorage, BaseStorageJob
 
 DIR_ACCESS  = 0750
 FILE_ACCESS = 0750
+TIME_FORMAT = '%Y%m%d-%H%M%S-%Z'
 
 class FileStorage(BaseStorage):
     def __init__(self, section):
@@ -64,10 +66,11 @@ class FileStorageJob(BaseStorageJob):
         self.success    = False
         self.clientName = clientName
         self.jobName    = jobName
-        self.jobTime    = strftime("%Y%m%d-%H%M%S-%Z", timestamp)
+        self.jobTime    = strftime(TIME_FORMAT, timestamp)
         self.timestamp  = timestamp
         self.jobDir     = os.path.join(self.storage.stagejobsdir, self.clientName,\
                                        self.jobName, self.jobTime)
+        self.jobLinks   = self.getJobLinks()
         self.logName    = "{0}-{1}-{2}.log".format(self.clientName, self.jobName, self.jobTime)
 
         formatter = logging.Formatter("%(levelname)s: %(message)s")
@@ -84,6 +87,22 @@ class FileStorageJob(BaseStorageJob):
             self.log.error(msg)
             raise ValueError, msg
 
+    def getJobLinks(self):
+        path = os.path.join(self.storage.jobsdir, self.clientName, self.jobName)
+        if os.path.exists(path):
+            joblist = list()
+            for name in os.listdir(path):
+                jobdir = os.path.join(path, name)
+                if os.path.isdir(jobdir):
+                    try:
+                        strptime(TIME_FORMAT, name)
+                        joblist.append(jobdir)
+                    except ValueError:
+                        continue
+            joblist.sort()
+            return joblist if len(joblist) > 0 else None
+        return None
+
     def close(self):
         if os.path.exists(self.jobDir):
             try:
@@ -93,7 +112,21 @@ class FileStorageJob(BaseStorageJob):
                 self.log.error(msg)
         super(FileStorageJob, self).close()
 
+    def findFile(self, fileinfo):
+        if self.jobLinks and fileinfo.type == FileInfo.T_FILE:
+            pass
+        return None
+
     def processFile(self, fileinfo):
         self.log.info("file: "+os.path.join(fileinfo.path, fileinfo.name))
+        if fileinfo.file.type == FileInfo.T_FILE:
+            filepath = os.path.join(self.jobDir, fileinfo.file.path, fileinfo.file.name)
+            if not os.path.isdir(os.path.join(self.jobDir, fileinfo.file.path)):
+                msg = "destination directory does not exist: "+fileinfo.file.path
+                self.log.error(msg)
+                raise ValueError, msg
+            linkfile = self.findFile(fileinfo)
+            if linkfile is not None:
+                os.link(linkfile, filepath)
 
 

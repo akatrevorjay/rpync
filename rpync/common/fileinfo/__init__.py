@@ -1,7 +1,7 @@
 import json
 
 from platform                            import system
-from rpync.common.fileinfo.base          import TIME_FORMAT
+from rpync.common.fileinfo.base          import FileInfo, TIME_FORMAT
 from rpync.common.fileinfo.fileinfo_unix import FileInfoUnix
 
 SUPPORTED_PLATFORMS = {

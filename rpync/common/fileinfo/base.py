@@ -9,6 +9,14 @@ TIME_FORMAT = '%Y%m%d-%H%M%S-%Z'
 
 class FileInfo(object):
 
+    T_DIR    = 'DIR'
+    T_CHAR   = 'CHR'
+    T_BLOCK  = 'BLK'
+    T_FILE   = 'REG'
+    T_FIFO   = 'FIF'
+    T_LINK   = 'LNK'
+    T_SOCKET = 'SOC'
+
     class Branch(object):
         def __init__(self, branch):
             assert isinstance(branch, dict)
@@ -51,21 +59,21 @@ class FileInfo(object):
         }
         mode = stat[ST_MODE]
         if S_ISDIR(mode):
-            self.info['file']['type'] = 'DIR'
+            self.info['file']['type'] = self.T_DIR
         elif S_ISCHR(mode):
-            self.info['file']['type'] = 'CHR'
+            self.info['file']['type'] = self.T_CHAR
         elif S_ISBLK(mode):
-            self.info['file']['type'] = 'BLK'
+            self.info['file']['type'] = self.T_BLOCK
         elif S_ISREG(mode):
-            self.info['file']['type'] = 'REG'
+            self.info['file']['type'] = self.T_FILE
             self.info['file']['size'] = stat[ST_SIZE]
         elif S_ISFIFO(mode):
-            self.info['file']['type'] = 'FIF'
+            self.info['file']['type'] = self.T_FIFO
         elif S_ISLNK(mode):
-            self.info['file']['type'] = 'LNK'
+            self.info['file']['type'] = self.T_LINK
             self.info['file']['link'] = os.readlink(fullpath)
         elif S_ISSOCK(mode):
-            self.info['file']['type'] = 'SOC'
+            self.info['file']['type'] = self.T_SOCKET
         self.__make_ext__(path, basepath, fullpath, stat, platform)
 
     def __setinfo__(self, info):
@@ -80,9 +88,9 @@ class FileInfo(object):
             assert 'ctime' in fileinfo
             assert 'mtime' in fileinfo
             assert 'type'  in fileinfo
-            if fileinfo['type'] == 'REG':
+            if fileinfo['type'] == self.T_FILE:
                 assert 'size'  in fileinfo
-            if fileinfo['type'] == 'LNK':
+            if fileinfo['type'] == self.T_LINK:
                 assert 'link'  in fileinfo
         except AssertionError,e:
             raise ValueError, "Invalid file information"
