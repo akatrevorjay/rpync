@@ -1,7 +1,7 @@
-Metadata-Version: 1.0
+Metadata-Version: 1.1
 Name: rpync
 Version: 0.1alpha0dev
-Summary: Backup utility using rsync for the heavy work and ssh for transport
+Summary: Backup utility using rsync algorithm for file synchornization
 Home-page: https://github.com/cramren/rpync
 Author: Marc Göldner
 Author-email: UNKNOWN

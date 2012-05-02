@@ -12,9 +12,9 @@ DIR_ACCESS  = 0750
 FILE_ACCESS = 0750
 TIME_FORMAT = '%Y%m%d-%H%M%S-%Z'
 
-class FileStorage(BaseStorage):
+class DiskStorage(BaseStorage):
     def __init__(self, section):
-        super(FileStorage, self).__init__(section)
+        super(DiskStorage, self).__init__(section)
         self.basedir = os.path.realpath(self.config.get(self.section, 'basedir'))
         if not os.path.isdir(self.basedir):
             msg = "invalid storage directory: " + self.basedir
@@ -57,12 +57,12 @@ class FileStorage(BaseStorage):
         return False
 
     def createJob(self, clientName, jobName, timestamp):
-        return FileStorageJob(self, clientName, jobName, timestamp)
+        return DiskStorageJob(self, clientName, jobName, timestamp)
 
-class FileStorageJob(BaseStorageJob):
+class DiskStorageJob(BaseStorageJob):
     def __init__(self, storage, clientName, jobName, timestamp):
-        assert isinstance(storage, FileStorage)
-        super(FileStorageJob, self).__init__(storage)
+        assert isinstance(storage, DiskStorage)
+        super(DiskStorageJob, self).__init__(storage)
         self.success    = False
         self.clientName = clientName
         self.jobName    = jobName
@@ -110,7 +110,7 @@ class FileStorageJob(BaseStorageJob):
             except OSError, e:
                 msg = "unable to remove job directory '{0}': {1}". format(self.jobDir, str(e))
                 self.log.error(msg)
-        super(FileStorageJob, self).close()
+        super(DiskStorageJob, self).close()
 
     def findFile(self, fileinfo):
         if self.jobLinks and fileinfo.type == FileInfo.T_FILE:

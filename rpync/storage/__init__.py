@@ -1,7 +1,7 @@
 from rpync.common.config      import getConfig, ConfigParser
 from rpync.common.logger      import getLogger
 from rpync.storage.base       import BaseStorage
-from rpync.storage.file       import FileStorage
+from rpync.storage.disk       import DiskStorage
 from rpync.storage.interfaces import IStorage
 
 STORAGE_INSTANCE = None
