@@ -87,6 +87,17 @@ class DiskStorageJob(BaseStorageJob):
             self.log.error(msg)
             raise ValueError, msg
 
+    def __enter__(self):
+        return self
+
+    def __exit__(except_type, except_value, traceback):
+        try:
+            self.close()
+            return False
+        except Exception:
+            if except_type is None:
+                raise
+
     def getJobLinks(self):
         path = os.path.join(self.storage.jobsdir, self.clientName, self.jobName)
         if os.path.exists(path):
