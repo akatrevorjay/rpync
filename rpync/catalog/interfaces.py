@@ -11,8 +11,8 @@ class ICatalog(Interface):
 
 class IIndexedCatalog(ICatalog):
     """Catalog wich can be queried. Usually with a database store"""
-    def startJob(jobinfo, seqcat=None):
-        """Starts a new job in the catalog. Writes to sequential catalog (seqcat) if given.
+    def createJob(jobinfo, seqcat=None):
+        """Creates a new job in the catalog. Writes to sequential catalog (seqcat) if given.
            Returns an ICatalogJob."""
 
 class ICatalogJob(ICatalog):

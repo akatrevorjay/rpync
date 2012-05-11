@@ -16,10 +16,22 @@ class BaseStorage(object):
         self.config  = getConfig()
         self.section = section
         self.log     = getLogger('storage')
+        self.joblist = list()
         if not self.config.has_section(self.section):
             msg = "unknown section: "+section
             self.log.error(msg)
             raise ValueError, msg
+
+    def __enter__(self):
+        return self
+
+    def __exit__(except_type, except_value, traceback):
+        try:
+            self.close()
+            return False
+        except Exception:
+            if except_type is None:
+                raise
 
     def newJobId(self):
         global counter, counterLock
@@ -30,6 +42,10 @@ class BaseStorage(object):
     def createJob(self, clientName, jobName):
         raise NotImplementedError
 
+    def close(self):
+        while len(self.joblist) > 0:
+            self.joblist[0].close()
+
 class BaseStorageJob(object):
     implements(IStorageJob)
 
@@ -39,9 +55,22 @@ class BaseStorageJob(object):
         self.jid     = self.storage.newJobId()
         self.log     = getLogger('storage', str(self.jid))
 
-    def close(self):
-        pass
+    def __enter__(self):
+        return self
+
+    def __exit__(except_type, except_value, traceback):
+        try:
+            self.close()
+            return False
+        except Exception:
+            if except_type is None:
+                raise
 
     def processFile(self, fileinfo):
         raise NotImplementedError
+
+    def close(self):
+        if self.storage is not None:
+            del self.storage.joblist[self.storage.joblist.index(self)]
+            self.storage = None
 

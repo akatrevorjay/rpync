@@ -71,13 +71,14 @@ class DiskStorageJob(BaseStorageJob):
         self.jobDir     = os.path.join(self.storage.stagejobsdir, self.clientName,\
                                        self.jobName, self.jobTime)
         self.jobLinks   = self.getJobLinks()
+        self.catName    = "{0}-{1}-{2}.cat".format(self.clientName, self.jobName, self.jobTime)
         self.logName    = "{0}-{1}-{2}.log".format(self.clientName, self.jobName, self.jobTime)
 
-        formatter = logging.Formatter("%(levelname)s: %(message)s")
-        handler   = logging.FileHandler(os.path.join(self.storage.stagelogsdir, self.logName),'wb')
-        handler.setLevel(logging.INFO)
-        handler.setFormatter(formatter)
-        self.log.addHandler(handler)
+        formatter       = logging.Formatter("[%(asctime)s] %(levelname)s: %(message)s")
+        self.handler    = logging.FileHandler(os.path.join(self.storage.stagelogsdir, self.logName),'wb')
+        self.handler.setLevel(logging.INFO)
+        self.handler.setFormatter(formatter)
+        self.log.addHandler(self.handler)
         self.log.info("initializing storage job")
         self.log.info("path: " + self.jobDir[len(self.storage.stagejobsdir)+1:])
         try:
@@ -86,17 +87,6 @@ class DiskStorageJob(BaseStorageJob):
             msg = "unable to create job directory '{0}': {1}". format(self.jobDir, str(e))
             self.log.error(msg)
             raise ValueError, msg
-
-    def __enter__(self):
-        return self
-
-    def __exit__(except_type, except_value, traceback):
-        try:
-            self.close()
-            return False
-        except Exception:
-            if except_type is None:
-                raise
 
     def getJobLinks(self):
         path = os.path.join(self.storage.jobsdir, self.clientName, self.jobName)
